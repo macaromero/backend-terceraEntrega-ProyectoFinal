@@ -1,11 +1,8 @@
 const classC = require("../lib/carts_class");
 const classCarts = new classC;
 const uuid = require("uuid");
-const {user, transporter} = require('../config/nodemailer');
-const sId = 'ACb0e19a8344d305b50f731e79c7de6fac';
-const authToken = '2a7606637fc3106e40cac3e77b26231d';
-const client = require('twilio')(sId, authToken);
-const numWhatsapp = 1125342519;
+const {transporter} = require('../config/nodemailer');
+const client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTHTOKEN);
 const {log4js} = require('../middlewares/logger');
 const loggerError = log4js.getLogger('error');
 const loggerWarning = log4js.getLogger('warn');
@@ -22,7 +19,7 @@ const createCart = async (req, res) => {
 
     const mailOptions = {
         from: 'macarenasromero@gmail.com',
-        to: user,
+        to: process.env.NODEMAILER_USER,
         subject: subject,
         text: JSON.stringify(productos) 
     };
@@ -38,7 +35,7 @@ const createCart = async (req, res) => {
     client.messages.create({
         body: subject,
         from: 'whatsapp:+14155238886',
-        to: `whatsapp:+549${Number(numWhatsapp)}`
+        to: `whatsapp:+549${Number(process.env.TWILIO_NUMWHATSAPP)}`
     }, (err, info) => {
         if(err) {
             loggerError.error(`Ocurrió un error al enviar el mensaje por WhatsApp: ${err}`);
